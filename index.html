@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MySpace</title>
+  <link rel="icon" href="https://onmsft.com/wp-content/uploads/2020/03/microsofttododarkmode.jpg" type="image/jpeg">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #171828;
+      margin: 0;
+      padding: 20px;
+
+    }
+    h1 {
+      text-align: left;
+      color: white;
+      margin: 0px;
+      font-size: 23px;
+      margin-bottom: 20px;
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 20px;
+      gap: 1em;
+    }
+    .tab {
+      text-align: center;
+      cursor: pointer;
+      background: #ddd;
+      border-radius: 5px;
+      width: 100%;
+      height: 90px;
+      align-content: center;
+    }
+    .tab.active {
+      background: linear-gradient( 55deg, #ffffff, #ccc);
+      color: #454649;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #171828;
+      border-radius: 10px;
+      
+    }
+    input {
+      padding: 8px;
+    }
+    button {
+      cursor: pointer;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      align-items: center;
+    }
+    li span {
+        min-width: 70%;
+        max-width: 70%;
+        word-wrap: break-word;
+        white-space: normal;
+        font-size: 14px;
+        color: #c5c9d5;
+        display: inline-block;
+    }
+    .delete-btn, .check-btn, .edit-btn {
+      border: none;
+      border-radius: 4px;
+      padding: 0px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 15px;
+      
+    }
+    .delete-btn:hover, .check-btn:hover, .edit-btn:hover {
+      background: #f44336;
+      color: white;
+      border: 0px;
+    }
+    .check-btn { color: white; background:#00d26a;}
+    .edit-btn { color: white; }
+
+    .checked span {
+        position: relative;
+        color: #807e7e;
+    }
+
+    .checked span::before {
+        content: '';
+        width: 100px;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        height: 1px;
+        background: #c7bcbc;
+        width: 100%;
+        transform: translateY(-50%);
+    }
+
+
+    @keyframes strikethrough {
+      from { text-decoration: none; opacity: 0.5; }
+      to { text-decoration: line-through; opacity: 1; }
+    }
+
+    .edit-mode {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .edit-mode input {
+      margin-right: 10px;
+      border: none;
+      outline: none;
+      padding: 5px;
+      font-size: 18px;
+    }
+    .widget {
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+    .widget-header {
+      display: flex;
+      justify-content: end;
+      font-size: 11px;
+      margin-bottom: 10px;      
+      color: #7d7d7d;
+    }
+
+    .menu-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #c5c9d5;
+    }
+
+    .dropdown {
+      position: absolute;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .dropdown button {
+      background: none;
+      border: none;
+      padding: 8px 12px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .dropdown button:hover {
+      background-color: #f0f0f0;
+    }
+    .container-header{
+        display: grid;
+        grid-template-columns: 65% 30%;
+        gap: 5%;
+        margin-bottom: 10px;
+    }
+    .container-header button{
+        background-color: #4285f4;
+        color: white;
+        border: 0px;
+        border-radius: 5px;
+    }
+    .container-header input{
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .tab1{
+        background: linear-gradient( 55deg, #faa262, #fa3751);
+        color: white;
+    }
+    .tab2{
+        background: linear-gradient( 55deg, #d755d7, #fe2f5b);
+        color: white;
+    }
+    
+    .tab3{
+        background: linear-gradient( 55deg, #1ef1ef, #8949ef);
+        color: white;
+    }
+    .tab4{
+        background: linear-gradient( 55deg, #21ecfe, #1852f6);
+        color: white;
+    }
+    p{
+        color: white;
+        font-size: 15px;
+    }
+    
+
+  </style>
+</head>
+<body>
+    <h1 id="pageTitle">To-Do Лист</h1>
+
+    <div class="tabs">
+        <div class="tab tab1 active" data-tab="todo">To-Do</div>
+        <div class="tab tab2" data-tab="wish">Wish List</div>
+        <div class="tab tab3" data-tab="notes">Заметки</div>
+        <a href="finance.html" class="tab tab4" style="text-decoration: none; text-align: center;">Финансы</a>
+      </div>
+      
+  <p>Введите задачу, желание или заметку:</p>
+  <div class="container">
+    <div class="container-header">
+      <input type="text" id="itemInput" placeholder="Заполните форму" />
+      <button onclick="addItem()">Добавить</button>
+    </div>
+    <div id="tasksContainer"></div>
+    <div id="clearCompletedContainer" style="text-align: center; margin-top: 10px; display: none;">
+        <button onclick="clearCompleted()" style="background: #f44336; color: white; border: none; border-radius: 5px; padding: 8px 12px; cursor: pointer;">
+          Очистить выполненные задачи
+        </button>
+      </div>
+  </div>
+
+  <script>
+    let currentTab = "todo";
+    const tabs = document.querySelectorAll('.tab');
+    const itemInput = document.getElementById('itemInput');
+    const tasksContainer = document.getElementById('tasksContainer');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentTab = tab.dataset.tab;
+        renderList();
+      });
+    });
+
+    function getData() {
+  let data = localStorage.getItem('todoWishData');
+  data = data ? JSON.parse(data) : {};
+  if (!data.todo) data.todo = [];
+  if (!data.wish) data.wish = [];
+  if (!data.notes) data.notes = [];
+  if (!data.finance) data.finance = [];  // ← ВАЖНО!
+  return data;
+}
+
+const pageTitle = document.getElementById('pageTitle');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTab = tab.dataset.tab;
+    updateTitle();
+    renderList();
+  });
+});
+
+function updateTitle() {
+  if (currentTab === 'todo') pageTitle.textContent = 'To-Do Лист';
+  else if (currentTab === 'wish') pageTitle.textContent = 'Wish List';
+  else if (currentTab === 'notes') pageTitle.textContent = 'Заметки';
+}
+function clearCompleted() {
+  const data = getData();
+  data[currentTab] = data[currentTab].filter(task => !task.completed);
+  saveData(data);
+  renderList();
+}
+
+
+    function saveData(data) {
+      localStorage.setItem('todoWishData', JSON.stringify(data));
+    }
+
+    function addItem() {
+      const text = itemInput.value.trim();
+      if (!text) return;
+      const date = new Date().toLocaleDateString();
+      const data = getData();
+      data[currentTab].push({ text, completed: false, date });
+      saveData(data);
+      itemInput.value = '';
+      renderList();
+    }
+
+    function deleteItem(index) {
+      const data = getData();
+      data[currentTab].splice(index, 1);
+      saveData(data);
+      renderList();
+    }
+
+    function toggleComplete(index) {
+      const data = getData();
+      const item = data[currentTab][index];
+      item.completed = !item.completed;
+      saveData(data);
+      renderList();
+    }
+
+    function editItem(index) {
+      const data = getData();
+      const item = data[currentTab][index];
+      const li = tasksContainer.querySelectorAll('li')[index];
+      li.innerHTML = `
+        <div class="edit-mode">
+          <input type="text" value="${item.text}" id="editInput" />
+          <button class="check-btn" onclick="saveEdit(${index})">✅</button>
+          <button class="delete-btn" onclick="cancelEdit()">❌</button>
+        </div>
+      `;
+    }
+
+    function cancelEdit() {
+      renderList();
+    }
+
+    function saveEdit(index) {
+      const data = getData();
+      const newText = document.getElementById('editInput').value.trim();
+      if (!newText) return;
+      data[currentTab][index].text = newText;
+      saveData(data);
+      renderList();
+    }
+
+    function getOriginalIndex(task) {
+      const data = getData();
+      return data[currentTab].findIndex(t => t.text === task.text && t.date === task.date);
+    }
+
+    function groupByDate(tasks) {
+      return tasks.reduce((groups, task) => {
+        const date = task.date;
+        if (!groups[date]) groups[date] = [];
+        groups[date].push(task);
+        return groups;
+      }, {});
+    }
+
+    function toggleDropdown(button) {
+      const dropdown = button.nextElementSibling;
+      const isVisible = dropdown.style.display === 'flex';
+      document.querySelectorAll('.dropdown').forEach(menu => {
+        menu.style.display = 'none';
+      });
+      dropdown.style.display = isVisible ? 'none' : 'flex';
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.matches('.menu-btn')) {
+        document.querySelectorAll('.dropdown').forEach(menu => {
+          menu.style.display = 'none';
+        });
+      }
+    });
+
+    function renderList() {
+  const data = getData();
+  tasksContainer.innerHTML = '';
+
+  const groupedTasks = groupByDate(data[currentTab]);
+  const dates = Object.keys(groupedTasks);
+
+  if (dates.length === 0) {
+    const emptyMessage = document.createElement('p');
+    emptyMessage.textContent = 'Пока данных нет';
+    emptyMessage.style.color = '#7d7d7d';
+    emptyMessage.style.textAlign = 'center';
+    emptyMessage.style.marginTop = '100px';
+    tasksContainer.appendChild(emptyMessage);
+
+    // скрываем кнопку, если нет задач
+    document.getElementById('clearCompletedContainer').style.display = 'none';
+    return;
+  }
+
+  for (let date in groupedTasks) {
+    const widget = document.createElement('div');
+    widget.classList.add('widget');
+
+    const widgetHeader = document.createElement('div');
+    widgetHeader.classList.add('widget-header');
+    widgetHeader.innerHTML = `<span>${date}</span>`;
+    widget.appendChild(widgetHeader);
+
+    const taskList = document.createElement('ul');
+    groupedTasks[date].forEach((item, index) => {
+      const li = document.createElement('li');
+      li.classList.toggle('checked', item.completed);
+      li.innerHTML = `
+        <span><small class="task-number">${index + 1}.</small> ${item.text}</span>
+        <div style="display:flex; align-items:center; gap:5px;">
+          ${currentTab !== 'notes' && !item.completed ? `<button class="check-btn" onclick="toggleComplete(${getOriginalIndex(item)})">✅</button>` : ''}
+          <div class="menu-container">
+            <button class="menu-btn" onclick="toggleDropdown(this)">⋮</button>
+            <div class="dropdown">
+              <button onclick="editItem(${getOriginalIndex(item)})">✏️ Редактировать</button>
+              <button onclick="deleteItem(${getOriginalIndex(item)})">🗑️ Удалить</button>
+            </div>
+          </div>
+        </div>
+      `;
+      taskList.appendChild(li);
+    });
+
+    widget.appendChild(taskList);
+    tasksContainer.appendChild(widget);
+  }
+
+  // ✅ Показываем кнопку "Очистить выполненные", если все задачи завершены
+  const allCompleted = data[currentTab].length > 0 && data[currentTab].every(t => t.completed);
+  document.getElementById('clearCompletedContainer').style.display = allCompleted ? 'block' : 'none';
+}
+
+
+
+    renderList();
+  </script>
+</body>
+</html>

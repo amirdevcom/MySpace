@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Финансы</title>
+  <link rel="icon" href="https://onmsft.com/wp-content/uploads/2020/03/microsofttododarkmode.jpg" type="image/jpeg">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #171828;
+      margin: 0;
+      padding: 20px;
+
+    }
+    h1 {
+      text-align: left;
+      font-size: 23px;
+      color: white;
+      font-weight: 100;
+    }
+    button {
+      margin: 0px;
+      margin-top: 10px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      
+    }
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .modal-content input {
+      margin-bottom: 10px;
+      padding: 8px;
+      min-width: 220px;
+    }
+    .modal-content select {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      color: black;
+    }
+    .modal-content button {
+      padding: 8px 12px;
+      margin-right: 5px;
+
+    }
+    #financeList ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .modal-content h3{
+        color: #313348;
+        margin-top: 0px;
+        margin-bottom: 20px;
+    }
+    #financeList{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    hr{
+        width: 100%;
+        opacity: 0.5;
+        
+        border: 0.5px solid #4d4d4d;
+    }
+    .menu-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #ebebeb;
+        margin-top: 0px;
+    }
+
+    li{
+        align-items: center;
+    }
+
+    .dropdown {
+        position: absolute;
+        right: 10px;
+        background: #313348;
+        border: 0px solid #ccc;
+        border-radius: 5px;
+        display: none;
+        flex-direction: column;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        z-index: 10;
+        padding: 0px;
+        align-content: center;
+        padding-bottom: 8px;
+    }
+
+    .dropdown button {
+        background: none;
+        border: none;
+        padding: 0px 12px;
+        text-align: left;
+        cursor: pointer;
+        font-size: 14px;
+        width: 100%;
+        align-content: center;
+    }
+
+    .dropdown button:hover {
+        background-color: #f0f0f0;
+    }
+    h1{
+        margin: 0px;
+        text-align: center;
+    }
+    header{
+        display: grid;
+        grid-template-columns: 20px 70%;
+        gap: 1em;
+        align-items: center;
+    }
+    header a{
+        color: white;
+        text-decoration: none;
+        font-weight: 5000;
+        font-size: 20px;
+    }
+    h3{
+        color: #ccc;
+        font-weight: 100;
+        margin-bottom: 0px;
+        margin: 0px;
+    }
+    li{
+        display: grid;
+        grid-template-columns: 90% 10%;
+        align-items: center;
+    }
+    .span{
+        color: #ccc;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+    }
+    .span span{
+        max-width: 80%;
+    }
+    p{
+        color: white;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 0px;
+        margin-bottom: 15px;
+    }
+    .btns{
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html">←</a>
+        <h1>Финансы</h1>
+    </header>
+
+  <div class="btns">
+    <button onclick="openModal('income')">Добавить доход</button>
+    <button onclick="openModal('expense')">Добавить расход</button>
+  </div>
+
+  <div id="financeList"></div>
+
+  <!-- Модальное окно -->
+  <div id="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">Добавление</h3>
+      
+        <div id="categoryInputWrapper">
+          <input type="text" id="category" placeholder="Категория" />
+        </div>
+      
+        <input type="text" id="source" placeholder="Источник / Описание" />
+        <input type="number" id="amount" placeholder="Сумма в ₸" />
+      
+        <div style="text-align: right;">
+          <button onclick="submitFinance()">Сохранить</button>
+          <button onclick="closeModal()">Отмена</button>
+        </div>
+      </div>
+      
+  </div>
+
+  <script>
+    let currentType = 'income'; // или 'expense'
+
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+
+    function openModal(type) {
+  currentType = type;
+  modalTitle.textContent = type === 'income' ? 'Добавление дохода' : 'Добавление расхода';
+
+  const wrapper = document.getElementById('categoryInputWrapper');
+  wrapper.innerHTML = ''; // очищаем старое содержимое
+
+  if (type === 'income') {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'category';
+    input.placeholder = 'Категория (например, Зарплата)';
+    input.required = true;
+    wrapper.appendChild(input);
+
+    document.getElementById('source').style.display = 'block';
+  } else {
+    const select = document.createElement('select');
+    select.id = 'category';
+    const categories = [
+    "Кредиты", "Зал абонимент", "Продукты", "Напитки и снеки", "Транспорт", "Коммунальные услуги", "Аренда / Ипотека", "Мобильная связь и интернет",
+    "Мебель", "Бытовая техника", "Ремонт и обслуживание жилья", "Домашние животные", "Химия и средства ухода",
+    "Одежда", "Обувь", "Косметика и уход", "Стрижка / Салон красоты",
+    "Кино / театры / концерты", "Кафе и рестораны", "Подписки", "Игры и приложения", "Туризм и поездки",
+    "Аптека", "Визиты к врачу", "Страховка", "Спортзал / фитнес", "Массаж / терапия",
+    "Курсы", "Книги и учебники", "Репетиторы",
+    "Подарки", "Украшения и организация", "Свадьбы / праздники",
+    "Банковские комиссии", "Налоги и штрафы", "Благотворительность", "Резерв / накопления", "Другое",
+    "Детское питание", "Игрушки", "Детская одежда", "Школа / кружки / секции"
+    ];
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      select.appendChild(option);
+    });
+    wrapper.appendChild(select);
+
+    document.getElementById('source').style.display = 'none';
+    document.getElementById('source').value = '';
+  }
+
+  document.getElementById('amount').value = '';
+  modal.style.display = 'flex';
+}
+
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    function getFinanceData() {
+      const data = localStorage.getItem('financeData');
+      return data ? JSON.parse(data) : [];
+    }
+
+    function saveFinanceData(data) {
+      localStorage.setItem('financeData', JSON.stringify(data));
+    }
+
+    function submitFinance() {
+        const categoryEl = document.getElementById('category');
+        const category = categoryEl.value.trim();
+        const source = document.getElementById('source').value.trim();
+        const amount = parseFloat(document.getElementById('amount').value);
+
+        if (!category || (currentType === 'income' && !source) || isNaN(amount)) {
+            alert('Пожалуйста, заполните все поля.');
+            return;
+        }
+
+        const financeData = getFinanceData();
+        financeData.push({
+            type: currentType,
+            category,
+            source: currentType === 'income' ? source : '',
+            amount,
+            date: new Date().toLocaleDateString()
+        });
+
+        saveFinanceData(financeData);
+        closeModal();
+        renderFinanceList();
+    }
+
+
+
+    function editFinance(index) {
+      const data = getFinanceData();
+      const item = data[index];
+
+      currentType = item.type;
+      document.getElementById('category').value = item.category;
+      document.getElementById('source').value = item.source;
+      document.getElementById('amount').value = item.amount;
+      modalTitle.textContent = currentType === 'income' ? 'Редактирование дохода' : 'Редактирование расхода';
+
+      // Если расход, скрываем поле "Источник"
+      if (currentType === 'expense') {
+        document.getElementById('source').style.display = 'none';
+      } else {
+        document.getElementById('source').style.display = 'block';
+      }
+
+      modal.style.display = 'flex';
+
+      // Переопределяем submit
+      submitFinance = function() {
+        const category = document.getElementById('category').value.trim();
+        const source = document.getElementById('source').value.trim();
+        const amount = parseFloat(document.getElementById('amount').value);
+
+        if (!category || isNaN(amount) || (currentType === 'income' && !source)) {
+          alert('Пожалуйста, заполните все поля.');
+          return;
+        }
+
+        data[index] = {
+          type: currentType,
+          category,
+          source,
+          amount,
+          date: item.date // сохраняем оригинальную дату
+        };
+
+        saveFinanceData(data);
+        modal.style.display = 'none';
+        renderFinanceList();
+
+        // Восстановим стандартную submit функцию
+        submitFinance = originalSubmitFinance;
+      }
+    }
+
+    function deleteFinance(index) {
+      const data = getFinanceData();
+      if (confirm('Удалить эту запись?')) {
+        data.splice(index, 1);
+        saveFinanceData(data);
+        renderFinanceList();
+      }
+    }
+
+    function toggleDropdown(button) {
+      const dropdown = button.nextElementSibling;
+      const isVisible = dropdown.style.display === 'flex';
+      document.querySelectorAll('.dropdown').forEach(menu => {
+        menu.style.display = 'none';
+      });
+      dropdown.style.display = isVisible ? 'none' : 'flex';
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.matches('.menu-btn')) {
+        document.querySelectorAll('.dropdown').forEach(menu => {
+          menu.style.display = 'none';
+        });
+      }
+    });
+
+    function renderFinanceList() {
+  const financeData = getFinanceData();
+  const financeList = document.getElementById('financeList');
+  financeList.innerHTML = '';
+
+  if (financeData.length === 0) {
+    financeList.innerHTML = '<p style="color: #aaa; text-align: center; margin-top: 40px;">Пока нет данных</p>';
+    return;
+  }
+
+  const incomeList = document.createElement('ul');
+  const expenseList = document.createElement('ul');
+  let totalIncome = 0;
+  let totalExpense = 0;
+
+  financeData.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="span"><span>${item.category} (${item.source ? item.source : ''})</span>  <span>${item.amount}₸</span></div>
+      <div class="menu-container">
+        <button class="menu-btn" onclick="toggleDropdown(this)">⋮</button>
+        <div class="dropdown">
+          <button onclick="editFinance(${index})">✏️ Редактировать</button>
+          <button onclick="deleteFinance(${index})">🗑️ Удалить</button>
+        </div>
+      </div>
+    `;
+    if (item.type === 'income') {
+      totalIncome += item.amount;
+      incomeList.appendChild(li);
+    } else if (item.type === 'expense') {
+      totalExpense += item.amount;
+      expenseList.appendChild(li);
+    }
+  });
+
+  financeList.innerHTML += '<h3>Доходы</h3>';
+  financeList.appendChild(incomeList);
+  
+  financeList.innerHTML += '<hr><br><h3>Расходы</h3>';
+  financeList.appendChild(expenseList);
+  financeList.innerHTML += `
+    <hr>
+    <div style="margin-top: 20px;">
+        <p style="color: green"><strong>Итого доход:</strong> ${totalIncome}₸</p>
+        <p style="color: crimson"><strong>Итого расход:</strong> ${totalExpense}₸</p>
+        <p><strong>Баланс:</strong> ${totalIncome - totalExpense}₸</p>
+    </div>
+  `;
+}
+
+    // При загрузке страницы
+    renderFinanceList();
+  </script>
+
+</body>
+</html>
